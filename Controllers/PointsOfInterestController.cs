@@ -30,21 +30,29 @@ namespace CityInfo.API.Controllers
         [HttpGet("{pointOfInterestId}", Name = "GetPointOfInterest")]
         public ActionResult<PointOfInterestDTO> GetPointOfInterest(int cityId, int pointOfInterestId)
         {
-            var city = CityDataStore.Current.Cities.FirstOrDefault(c => c.Id == cityId);
-            if (city == null)
+            try
             {
-                _logger.LogInformation($"Could not find the city with ID {cityId}");
-                return NotFound();
+                throw new Exception("Jason's exception");
+                var city = CityDataStore.Current.Cities.FirstOrDefault(c => c.Id == cityId);
+                if (city == null)
+                {
+                    _logger.LogInformation($"Could not find the city with ID {cityId}");
+                    return NotFound();
+                }
+                var pointOfInterest = city.PointsOfInterest.FirstOrDefault(p => p.Id == pointOfInterestId);
+                if (pointOfInterest == null)
+                {
+                    return NotFound();
+                }
+                return Ok(pointOfInterest);
             }
-            var pointOfInterest = city.PointsOfInterest.FirstOrDefault(p => p.Id == pointOfInterestId);
-            if (pointOfInterest == null)
+            catch (Exception ex)
             {
-                return NotFound();
+                _logger.LogCritical($"Exception took place while the client tried to access {cityId}", ex);
+                return StatusCode(500, "Something went wrong while handling your request.");
             }
-            return Ok(pointOfInterest);
         }
-
-        [HttpPost]
+    [HttpPost]
         public ActionResult<PointOfInterestDTO> CreatePointOfInterest(int cityId, PointOfInterestForCreationDTO pointOfInterest)
         {
             var city = CityDataStore.Current.Cities.FirstOrDefault(c => c.Id == cityId);
