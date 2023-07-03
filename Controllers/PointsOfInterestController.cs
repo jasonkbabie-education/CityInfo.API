@@ -32,7 +32,7 @@ namespace CityInfo.API.Controllers
         {
             try
             {
-                throw new Exception("Jason's exception");
+                throw new Exception("Jason's exception"); 
                 var city = CityDataStore.Current.Cities.FirstOrDefault(c => c.Id == cityId);
                 if (city == null)
                 {
