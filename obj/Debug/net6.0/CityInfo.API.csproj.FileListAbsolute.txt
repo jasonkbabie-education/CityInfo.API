@@ -31,3 +31,7 @@ C:\education-and-training\CityInfo.API\obj\Debug\net6.0\CityInfo.API.pdb
 C:\education-and-training\CityInfo.API\obj\Debug\net6.0\CityInfo.API.genruntimeconfig.cache
 C:\education-and-training\CityInfo.API\obj\Debug\net6.0\ref\CityInfo.API.dll
 C:\education-and-training\CityInfo.API\bin\Debug\net6.0\40 Algorithms Every Programmer Should Know.pdf
+C:\education-and-training\CityInfo.API\bin\Debug\net6.0\Microsoft.AspNetCore.JsonPatch.dll
+C:\education-and-training\CityInfo.API\bin\Debug\net6.0\Microsoft.AspNetCore.Mvc.NewtonsoftJson.dll
+C:\education-and-training\CityInfo.API\bin\Debug\net6.0\Newtonsoft.Json.dll
+C:\education-and-training\CityInfo.API\bin\Debug\net6.0\Newtonsoft.Json.Bson.dll

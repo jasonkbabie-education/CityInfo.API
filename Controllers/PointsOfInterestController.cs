@@ -1,5 +1,6 @@
 ﻿using CityInfo.API.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CityInfo.API.Controllers
@@ -72,6 +73,36 @@ namespace CityInfo.API.Controllers
             if (pointOfInterestToUpdate == null) { return NotFound(); }
             pointOfInterestToUpdate.Name = pointOfInterest.Name;
             pointOfInterestToUpdate.Description = pointOfInterest.Description;
+            return NoContent();
+        }
+
+        [HttpPatch("{pointOfInterestId}")]
+        public ActionResult PartiallyUpdatePointOfInterest(
+            int cityId, int pointOfInterestId,
+            JsonPatchDocument<PointOfInterestForUpdatesDTO> patchDocument)
+        {
+            var city = CityDataStore.Current.Cities.FirstOrDefault(c => c.Id == cityId);
+            if (city == null)
+            {
+                return NotFound();
+            }
+            var pointOfInterestToPatch = city.PointsOfInterest.FirstOrDefault(p => p.Id == pointOfInterestId);
+            var newPointOfInterest = new PointOfInterestForUpdatesDTO() { Name = pointOfInterestToPatch.Name, Description = pointOfInterestToPatch.Description };
+            patchDocument.ApplyTo(newPointOfInterest, ModelState);
+            return NoContent();
+        }
+
+        [HttpDelete("{pointOfInterestId}")]
+        public ActionResult DeletePointOfInterest(int cityId, int pointOfInterestId)
+        {
+            var city = CityDataStore.Current.Cities.FirstOrDefault(c => c.Id == cityId);
+            if (city == null)
+            {
+                return NotFound();
+            }
+            var pointOfInterestToDelete = city.PointsOfInterest.FirstOrDefault(p => p.Id == pointOfInterestId);
+            if (pointOfInterestToDelete == null) { return NotFound(); }
+            city.PointsOfInterest.Remove(pointOfInterestToDelete);
             return NoContent();
         }
     }
