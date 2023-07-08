@@ -27,6 +27,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<FileExtensionContentTypeProvider>();
 builder.Services.AddDbContext<CityInfoContext>(dbContextOptions => dbContextOptions.UseSqlite(builder.Configuration["ConnectionStrings:CityInfoDBConnectionString"]));
+builder.Services.AddScoped<ICityInfoRepository, CityInfoRepository>();
+
 #if DEBUG
     builder.Services.AddTransient<IMailService, LocalMailService>();
 #else
