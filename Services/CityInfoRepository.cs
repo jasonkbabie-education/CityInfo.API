@@ -13,20 +13,10 @@ namespace CityInfo.API.Services
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
-        public async Task<IEnumerable<City>> GetCitiesAsync(bool includePointsOfInterest = false)
-        {
-            if (includePointsOfInterest)
-                return await _context.Cities.Include(c => c.PointsOfInterest).OrderBy(c => c.Name).ToListAsync();
-            return await _context.Cities.OrderBy(c => c.Name).ToListAsync();
-        }
 
         //implement IQueryable<> to reduce duplicate code
-        public async Task<IEnumerable<City>> GetCitiesAsync(string? name, string? searchQuery, bool includePointsOfInterest = false)
+        public async Task<(IEnumerable<City>, PaginationMetadata)> GetCitiesAsync(int pageNumber, int pageSize, string? name, string? searchQuery, bool includePointsOfInterest = false)
         {
-            if (string.IsNullOrEmpty(name) && string.IsNullOrWhiteSpace(searchQuery))
-            {
-                return await GetCitiesAsync(includePointsOfInterest);
-            }
             var cities = _context.Cities as IQueryable<City>;
 
             if (!string.IsNullOrWhiteSpace(name))
@@ -41,10 +31,15 @@ namespace CityInfo.API.Services
                 cities = cities.Where(c => c.Name.Contains(searchQuery) || (c.Description != null && c.Description.Contains(searchQuery)));
             }
 
-            cities = cities.OrderBy(c => c.Name);
+            cities = cities.OrderBy(c => c.Name).Skip(pageSize * (pageNumber - 1)).Take(pageSize);
+            var totalItemCount = await cities.CountAsync();
+            var paginationMetadata = new PaginationMetadata(totalItemCount, pageSize, pageNumber);
+            IEnumerable<City> filteredCities;
             if (includePointsOfInterest)
-                return await cities.Include(c => c.PointsOfInterest).ToListAsync();
-            return await cities.ToListAsync();
+                filteredCities = await cities.Include(c => c.PointsOfInterest).ToListAsync();
+            else
+                await cities.ToListAsync();
+            return (cities, paginationMetadata);
         }
 
         public async Task<bool> CityExistsAsync(int cityId)
