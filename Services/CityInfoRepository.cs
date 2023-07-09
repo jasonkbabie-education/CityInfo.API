@@ -20,15 +20,31 @@ namespace CityInfo.API.Services
             return await _context.Cities.OrderBy(c => c.Name).ToListAsync();
         }
 
-        public async Task<IEnumerable<City>> GetCitiesAsync(string? name, bool includePointsOfInterest = false)
+        //implement IQueryable<> to reduce duplicate code
+        public async Task<IEnumerable<City>> GetCitiesAsync(string? name, string? searchQuery, bool includePointsOfInterest = false)
         {
-            if (string.IsNullOrEmpty(name))
+            if (string.IsNullOrEmpty(name) && string.IsNullOrWhiteSpace(searchQuery))
             {
                 return await GetCitiesAsync(includePointsOfInterest);
             }
+            var cities = _context.Cities as IQueryable<City>;
+
+            if (!string.IsNullOrWhiteSpace(name))
+            {
+                name = name.Trim();
+                cities = cities.Where(c => c.Name == name);
+            }
+
+            if (!string.IsNullOrEmpty(searchQuery))
+            { 
+                searchQuery = searchQuery.Trim();
+                cities = cities.Where(c => c.Name.Contains(searchQuery) || (c.Description != null && c.Description.Contains(searchQuery)));
+            }
+
+            cities = cities.OrderBy(c => c.Name);
             if (includePointsOfInterest)
-                return await _context.Cities.Include(c => c.PointsOfInterest).Where(c => c.Name == name).OrderBy(c => c.Name).ToListAsync();
-            return await _context.Cities.Where(c => c.Name == name).OrderBy(c => c.Name).ToListAsync();
+                return await cities.Include(c => c.PointsOfInterest).ToListAsync();
+            return await cities.ToListAsync();
         }
 
         public async Task<bool> CityExistsAsync(int cityId)

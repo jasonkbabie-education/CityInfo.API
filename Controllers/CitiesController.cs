@@ -20,9 +20,9 @@ namespace CityInfo.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetCities(string? name, bool includePointsOfInterest = false)
+        public async Task<IActionResult> GetCities(string? name, string? searchQuery, bool includePointsOfInterest = false)
         {
-            var cityEntities = await _cityInfoRepository.GetCitiesAsync(name, includePointsOfInterest);
+            var cityEntities = await _cityInfoRepository.GetCitiesAsync(name, searchQuery, includePointsOfInterest);
             if (includePointsOfInterest)
                 return Ok(_mapper.Map<IEnumerable<CityDTO>>(cityEntities));
             return Ok(_mapper.Map<IEnumerable<CityWithoutPointsOfInterestDTO>>(cityEntities));
