@@ -13,11 +13,22 @@ namespace CityInfo.API.Services
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
-        public async Task<IEnumerable<City>> GetCitiesAsync(bool includePointsOfInterest)
+        public async Task<IEnumerable<City>> GetCitiesAsync(bool includePointsOfInterest = false)
         {
             if (includePointsOfInterest)
                 return await _context.Cities.Include(c => c.PointsOfInterest).OrderBy(c => c.Name).ToListAsync();
             return await _context.Cities.OrderBy(c => c.Name).ToListAsync();
+        }
+
+        public async Task<IEnumerable<City>> GetCitiesAsync(string? name, bool includePointsOfInterest = false)
+        {
+            if (string.IsNullOrEmpty(name))
+            {
+                return await GetCitiesAsync(includePointsOfInterest);
+            }
+            if (includePointsOfInterest)
+                return await _context.Cities.Include(c => c.PointsOfInterest).Where(c => c.Name == name).OrderBy(c => c.Name).ToListAsync();
+            return await _context.Cities.Where(c => c.Name == name).OrderBy(c => c.Name).ToListAsync();
         }
 
         public async Task<bool> CityExistsAsync(int cityId)

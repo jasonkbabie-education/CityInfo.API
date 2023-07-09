@@ -36,8 +36,6 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
     builder.Services.AddTransient<IMailService, CloudMailService>();
 #endif
 
-builder.Services.AddSingleton<CityDataStore>();
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
