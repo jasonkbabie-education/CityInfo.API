@@ -7,7 +7,6 @@
         public int TotalPageCount { get; set; }
         public int CurrentPage { get; set; }
 
-
         public PaginationMetadata(int totalItemCount, int pageSize, int currentPage)
         {
             TotalItemCount = totalItemCount;

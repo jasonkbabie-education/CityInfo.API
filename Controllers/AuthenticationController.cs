@@ -75,7 +75,7 @@ namespace CityInfo.API.Controllers
 
         private CityInfoUser ValidateUserCredentials(string? userName, string? password)
         {
-            return new CityInfoUser(1, userName ??  "", "Jason", "Babie", "Crawford");
+            return new CityInfoUser(1, userName ??  "", "Jason", "Babie", "New York City");
         }
     }
 }
